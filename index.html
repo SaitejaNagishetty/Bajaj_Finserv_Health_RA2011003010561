@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Employee Visualization</title>
+
+    <style>
+      /* Global styles */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+
+      /* Employee styles */
+      .employee {
+        margin-bottom: 20px;
+        background-color: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .employee h2 {
+        color: #333333;
+        font-size: 20px;
+        margin-bottom: 5px;
+      }
+      .employee p {
+        color: #666666;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      .employee p:first-child {
+        font-weight: bold;
+      }
+
+      /* Project styles */
+      .project {
+        margin-left: 20px;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f2f2f2;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .project h3 {
+        color: #333333;
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      .project p {
+        color: #666666;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      .project ul {
+        list-style-type: none;
+        padding-left: 20px;
+        margin: 0;
+      }
+      .project ul li {
+        color: #666666;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+
+      /* Task styles */
+      .task {
+        margin-left: 20px;
+        color: #666666;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+
+      /* Additional vibrant colors */
+      .employee {
+        background-color: #f9e79f;
+      }
+      .employee h2 {
+        color: #e67e22;
+      }
+      .employee p {
+        color: #d35400;
+      }
+
+      .project {
+        background-color: #a2d9ce;
+      }
+      .project h3 {
+        color: #1abc9c;
+      }
+      .project p {
+        color: #16a085;
+      }
+      .project ul li {
+        color: #27ae60;
+      }
+
+      .task {
+        color: #2980b9;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="visualization"></div>
+    <h1>Developer Filter/Search</h1>
+    <input type="text" id="searchInput" placeholder="Search by Name">
+    <br>
+    <input type="text" id="designationInput" placeholder="Filter by Designation">
+    <input type="text" id="skillsInput" placeholder="Filter by Skills (comma-separated)">
+    <button onclick="filterDevelopers()">Filter</button>
+    <br>
+    <div id="resultsContainer"></div>
+    <script>
+      const jsonData =
+        // JSON data here
+
+        {
+          employees: [
+            {
+              id: 1,
+              name: "Mr. A",
+              designation: "Senior Developer",
+              skills: ["JavaScript", "Python", "Java"],
+              projects: [
+                {
+                  name: "Project A",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Bob",
+                      role: "Designer",
+                    },
+                    {
+                      name: null,
+                      role: "Tester",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 2,
+                      name: "Task 2",
+                      status: "Completed",
+                    },
+                    {
+                      id: 3,
+                      name: "Task 3",
+                      status: null,
+                    },
+                  ],
+                },
+                {
+                  name: "Project B",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: null,
+                      role: "Designer",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 2,
+                      name: "Task 2",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 3,
+                      name: "Task 3",
+                      status: "undefined",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 2,
+              name: "Mr. B",
+              designation: null,
+              skills: ["HTML", "CSS", "Photoshop"],
+              projects: [
+                {
+                  name: "Project C",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "David",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Eve",
+                      role: "Designer",
+                    },
+                    {
+                      name: "undefined",
+                      role: "Tester",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Completed",
+                    },
+                    {
+                      id: 2,
+                      name: null,
+                      status: "Completed",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 3,
+              name: null,
+              designation: "QA Engineer",
+              skills: ["Manual Testing", "undefined", "SQL"],
+              projects: null,
+            },
+            {
+              id: "undefined",
+              name: "Mr. D",
+              designation: "Project Manager",
+              skills: [],
+              projects: [
+                {
+                  name: "Project D",
+                  description: null,
+                  team: [],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Pending",
+                    },
+                    {
+                      id: "undefined",
+                      name: null,
+                      status: "In Progress",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 5,
+              name: "Mr. E",
+              designation: "Senior Developer",
+              skills: ["JavaScript", "Python", "Java"],
+              projects: [
+                {
+                  name: "Project E",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Bob",
+                      role: "Designer",
+                    },
+                    {
+                      name: null,
+                      role: "Tester",
+                    },
+                  ],
+                },
+                {
+                  name: "Project F",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: null,
+                      role: "Designer",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 2,
+                      name: "Task 2",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 3,
+                      name: "Task 3",
+                      status: "undefined",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 6,
+              name: "Mr. F",
+              designation: null,
+              skills: ["HTML", "CSS", "Photoshop"],
+              projects: [
+                {
+                  name: "Project G",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "David",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Eve",
+                      role: "Designer",
+                    },
+                    {
+                      name: "undefined",
+                      role: "Tester",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Completed",
+                    },
+                    {
+                      id: 2,
+                      name: null,
+                      status: "Completed",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 7,
+              name: null,
+              designation: "QA Engineer",
+              skills: ["Manual Testing", "undefined", "SQL"],
+              projects: null,
+            },
+            {
+              id: 8,
+              name: "Mr. H",
+              designation: "Project Manager",
+              skills: [],
+              projects: [
+                {
+                  name: "Project J",
+                  description: null,
+                  team: [],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Pending",
+                    },
+                    {
+                      id: "undefined",
+                      name: null,
+                      status: "In Progress",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 9,
+              name: "Mr. I",
+              designation: "Senior Developer",
+              skills: ["JavaScript", "Python", "Java"],
+              projects: [
+                {
+                  name: "Project I",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Bob",
+                      role: "Designer",
+                    },
+                    {
+                      name: null,
+                      role: "Tester",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 2,
+                      name: "Task 2",
+                      status: "Completed",
+                    },
+                    {
+                      id: 3,
+                      name: "Task 3",
+                      status: null,
+                    },
+                  ],
+                },
+                {
+                  name: "Project J",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: null,
+                      role: "Designer",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 2,
+                      name: "Task 2",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 3,
+                      name: "Task 3",
+                      status: "undefined",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 10,
+              name: "Mr. J",
+              designation: null,
+              skills: ["HTML", "CSS", "Photoshop"],
+              projects: [
+                {
+                  name: "Project K",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "David",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Eve",
+                      role: "Designer",
+                    },
+                    {
+                      name: "undefined",
+                      role: "Tester",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Completed",
+                    },
+                    {
+                      id: 2,
+                      name: null,
+                      status: "Completed",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 11,
+              name: null,
+              designation: "QA Engineer",
+              skills: ["Manual Testing", "undefined", "SQL"],
+              projects: null,
+            },
+            {
+              id: 12,
+              name: "Mr. L",
+              designation: "Project Manager",
+              skills: [],
+              projects: [
+                {
+                  name: "Project L",
+                  description: null,
+                  team: [],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Pending",
+                    },
+                    {
+                      id: "undefined",
+                      name: null,
+                      status: "In Progress",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 13,
+              name: "Mr. M",
+              designation: "Senior Developer",
+              skills: ["JavaScript", "Python", "Java"],
+              projects: [
+                {
+                  name: "Project M",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Bob",
+                      role: "Designer",
+                    },
+                    {
+                      name: null,
+                      role: "Tester",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 2,
+                      name: "Task 2",
+                      status: "Completed",
+                    },
+                    {
+                      id: 3,
+                      name: "Task 3",
+                      status: null,
+                    },
+                  ],
+                },
+                {
+                  name: "Project N",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "Alice",
+                      role: "Developer",
+                    },
+                    {
+                      name: null,
+                      role: "Designer",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 2,
+                      name: "Task 2",
+                      status: "In Progress",
+                    },
+                    {
+                      id: 3,
+                      name: "Task 3",
+                      status: "undefined",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 14,
+              name: "Mr. N",
+              designation: null,
+              skills: ["HTML", "CSS", "Photoshop"],
+              projects: [
+                {
+                  name: "Project O",
+                  description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                  team: [
+                    {
+                      name: "David",
+                      role: "Developer",
+                    },
+                    {
+                      name: "Eve",
+                      role: "Designer",
+                    },
+                    {
+                      name: "undefined",
+                      role: "Tester",
+                    },
+                  ],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Completed",
+                    },
+                    {
+                      id: 2,
+                      name: null,
+                      status: "Completed",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 15,
+              name: null,
+              designation: "QA Engineer",
+              skills: ["Manual Testing", "undefined", "SQL"],
+              projects: null,
+            },
+            {
+              id: 16,
+              name: "Mr. P",
+              designation: "Project Manager",
+              skills: [],
+              projects: [
+                {
+                  name: "Project P",
+                  description: null,
+                  team: [],
+                  tasks: [
+                    {
+                      id: 1,
+                      name: "Task 1",
+                      status: "Pending",
+                    },
+                    {
+                      id: "undefined",
+                      name: null,
+                      status: "In Progress",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        };
+
+      function createEmployeeElement(employee) {
+        const employeeElement = document.createElement("div");
+        employeeElement.className = "employee";
+
+        const nameElement = document.createElement("h2");
+        nameElement.textContent = employee.name;
+        employeeElement.appendChild(nameElement);
+
+        const designationElement = document.createElement("p");
+        designationElement.textContent =
+          employee.designation || "No designation";
+        employeeElement.appendChild(designationElement);
+
+        const skillsElement = document.createElement("p");
+        skillsElement.textContent = `Skills: ${employee.skills.join(", ")}`;
+        employeeElement.appendChild(skillsElement);
+
+        if (employee.projects && employee.projects.length > 0) {
+          const projectsElement = document.createElement("div");
+          projectsElement.className = "projects";
+
+          employee.projects.forEach((project) => {
+            const projectElement = document.createElement("div");
+            projectElement.className = "project";
+
+            const projectNameElement = document.createElement("h3");
+            projectNameElement.textContent = project.name;
+            projectElement.appendChild(projectNameElement);
+
+            const projectDescriptionElement = document.createElement("p");
+            projectDescriptionElement.textContent =
+              project.description || "No description";
+            projectElement.appendChild(projectDescriptionElement);
+
+            if (project.team && project.team.length > 0) {
+              const teamElement = document.createElement("ul");
+              teamElement.textContent = "Team Members:";
+
+              project.team.forEach((member) => {
+                const memberElement = document.createElement("li");
+                memberElement.textContent = `${member.name || "Unknown"} - ${
+                  member.role
+                }`;
+                teamElement.appendChild(memberElement);
+              });
+
+              projectElement.appendChild(teamElement);
+            }
+
+            if (project.tasks && project.tasks.length > 0) {
+              const tasksElement = document.createElement("ul");
+              tasksElement.textContent = "Tasks:";
+
+              project.tasks.forEach((task) => {
+                const taskElement = document.createElement("li");
+                taskElement.className = "task";
+                taskElement.textContent = `${task.name || "Untitled Task"} - ${
+                  task.status || "No status"
+                }`;
+                tasksElement.appendChild(taskElement);
+              });
+
+              projectElement.appendChild(tasksElement);
+            }
+
+            projectsElement.appendChild(projectElement);
+          });
+
+          employeeElement.appendChild(projectsElement);
+        }
+
+        return employeeElement;
+      }
+
+      function visualizeEmployees() {
+        const visualizationElement = document.getElementById("visualization");
+
+        jsonData.employees.forEach((employee) => {
+          const employeeElement = createEmployeeElement(employee);
+          visualizationElement.appendChild(employeeElement);
+        });
+      }
+
+      visualizeEmployees();
+
+      var developers = [
+            { name: "John Doe", designation: "Software Engineer", skills: ["Python", "JavaScript", "SQL"] },
+            { name: "Jane Smith", designation: "Data Scientist", skills: ["Python", "R", "Machine Learning"] },
+            { name: "Mark Johnson", designation: "Web Developer", skills: ["HTML", "CSS", "JavaScript"] },
+            { name: "Sarah Wilson", designation: "Software Engineer", skills: ["Java", "C++", "Python"] }
+        ];
+
+        // Function to render the results
+        function renderResults(results) {
+            var resultsContainer = document.getElementById("resultsContainer");
+            resultsContainer.innerHTML = "";
+
+            results.forEach(function (developer) {
+                var resultElement = document.createElement("div");
+                resultElement.className = "result";
+                resultElement.innerHTML = "<strong>Name:</strong> " + developer.name + "<br>" +
+                                          "<strong>Designation:</strong> " + developer.designation + "<br>" +
+                                          "<strong>Skills:</strong> " + developer.skills.join(", ");
+
+                resultsContainer.appendChild(resultElement);
+            });
+        }
+
+        // Function to search developers by name
+        function searchDevelopers() {
+            var searchInput = document.getElementById("searchInput");
+            var query = searchInput.value.toLowerCase();
+
+            var results = developers.filter(function (developer) {
+                return developer.name.toLowerCase().includes(query);
+            });
+
+            renderResults(results);
+        }
+
+        // Function to filter developers by designation and skills
+        function filterDevelopers() {
+            var designationInput = document.getElementById("designationInput");
+            var skillsInput = document.getElementById("skillsInput");
+
+            var designationQuery = designationInput.value.toLowerCase();
+            var skillsQuery = skillsInput.value.toLowerCase().split(",").map(function (skill) {
+                return skill.trim();
+            });
+
+            var results = developers.filter(function (developer) {
+                if (designationQuery && developer.designation.toLowerCase() !== designationQuery) {
+                    return false;
+                }
+
+                if (skillsQuery.length > 0) {
+                    return skillsQuery.every(function (skill) {
+                        return developer.skills.includes(skill);
+                    });
+                }
+
+                return true;
+            });
+
+            renderResults(results);
+        }
+
+        // Initial rendering of all developers
+        renderResults(developers);
+    
+    </script>
+  </body>
+</html>
